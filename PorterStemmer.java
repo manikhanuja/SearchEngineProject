@@ -5,33 +5,38 @@ import java.util.regex.*;
 public class PorterStemmer {
 
     // a single consonant
-    private static final String c = "[^aeiou]";
-    // a single vowel
-    private static final String v = "[aeiouy]";
+    private static final String CONSONANT_INTERIM = "[^aeiou]";
+    // a single VOWEL_AFTER_CONSONANT
+    private static final String VOWEL_INTERIM = "[aeiouy]";
 
     // a sequence of consonants; the second/third/etc consonant cannot be 'y'
-    private static final String C = c + "[^aeiouy]*";
+    private static final String CONSONANT = CONSONANT_INTERIM + "[^aeiouy]*";
     // a sequence of vowels; the second/third/etc cannot be 'y'
-    private static final String V = v + "[aeiou]*";
+    private static final String VOWEL = VOWEL_INTERIM + "[aeiou]*";
 
     // this regex pattern tests if the token has measure > 0 [at least one VC].
-    private static final Pattern mGr0 = Pattern.compile("^(" + C + ")?" + V + C);
+    private static final Pattern MEASURE_GR0 = Pattern.compile("^(" + CONSONANT + ")?" + VOWEL + CONSONANT);
 
     // add more Pattern variables for the following patterns:
     // m equals 1: token has measure == 1
-    private static final Pattern mEq1 = Pattern.compile("^(" + C + ")?" + V + C + "$");
+    private static final Pattern MEASURE_EQ1 = Pattern.compile("^(" + CONSONANT + ")?" + VOWEL + CONSONANT + "$");
 // m greater than 1: token has measure > 1
-    private static final Pattern mGr1 = Pattern.compile("^(" + C + ")?" + V + C + V + C);
-    // vowel: token has a vowel after the first (optional) C
-    private static final Pattern vowel = Pattern.compile("^(" + C + ")?" + V);
+    private static final Pattern MEASURE_GR1 = Pattern.compile("^(" + CONSONANT + ")?" + VOWEL + CONSONANT + VOWEL + CONSONANT);
+    // VOWEL_AFTER_CONSONANT: token has a VOWEL_AFTER_CONSONANT after the first (optional) CONSONANT
+    private static final Pattern VOWEL_AFTER_CONSONANT = Pattern.compile("^(" + CONSONANT + ")?" + VOWEL);
 
     // double consonant: token ends in two consonants that are the same, 
     //			unless they are L, S, or Z. (look up "backreferencing" to help 
     //			with this)
-    // m equals 1, cvc: token is in Cvc form, where the last c is not w, x,
+    private static final Pattern DOUBLE_CONSONANT = Pattern.compile("([^aeiouylsz])\\1" + "$");
+    // m equals 1, cvc: token is in Cvc form, where the last CONSONANT_INTERIM is not w, x,
     //			or y.
-    private static enum stepName{step2, step3, step4};
-    private static final String[][] step2pairs = {
+    private static final Pattern MEASURE_EQ1_NOT_WXY = Pattern.compile("^(" + CONSONANT + ")?" + VOWEL + "([^aeiouwxy]|" + "(" + CONSONANT + "[^aeiouyxy]))" + "$");
+
+    private static enum stepName {
+        stepTwo, stepThree, stepFour
+    };
+    private static final String[][] STEP_TWO_PAIRS = {
         new String[]{"ational", "ate"},
         new String[]{"tional", "tion"},
         new String[]{"enci", "ence"},
@@ -53,7 +58,7 @@ public class PorterStemmer {
         new String[]{"iviti", "ive"},
         new String[]{"biliti", "ble"}
     };
-    private static final String[][] step3pairs = {
+    private static final String[][] STEP_THREE_PAIRS = {
         new String[]{"icate", "ic"},
         new String[]{"ative", ""},
         new String[]{"alize", "al"},
@@ -62,7 +67,7 @@ public class PorterStemmer {
         new String[]{"ful", ""},
         new String[]{"ness", ""}
     };
-    private static final String[][] step4pairs = {
+    private static final String[][] STEP_FOUR_PAIRS = {
         new String[]{"al", ""},
         new String[]{"ance", ""},
         new String[]{"ence", ""},
@@ -112,7 +117,7 @@ public class PorterStemmer {
             // token.substring(0, token.length() - 3) is the stem prior to "eed".
             // if that has m>0, then remove the "d".
             String stem = token.substring(0, token.length() - 3);
-            if (mGr0.matcher(stem).find()) { // if the pattern matches the stem
+            if (MEASURE_GR0.matcher(stem).find()) { // if the pattern matches the stem
                 token = stem + "ee";
             }
         }
@@ -122,7 +127,7 @@ public class PorterStemmer {
             if (token.endsWith("eed")) {
             } else {
                 String stem = token.substring(0, token.length() - 2);
-                if (vowel.matcher(stem).find()) {
+                if (VOWEL_AFTER_CONSONANT.matcher(stem).find()) {
                     token = stem;
                     doStep1bb = true;
                 }
@@ -130,7 +135,7 @@ public class PorterStemmer {
         }
         if (token.endsWith("ing")) {
             String stem = token.substring(0, token.length() - 3);
-            if (vowel.matcher(stem).find()) {
+            if (VOWEL_AFTER_CONSONANT.matcher(stem).find()) {
                 token = stem;
                 doStep1bb = true;
             }
@@ -147,10 +152,10 @@ public class PorterStemmer {
 
         // step 1c
         // program this step. test the suffix of 'y' first, then test the 
-        // condition *v* on the stem.
+        // condition *VOWEL_INTERIM* on the stem.
         if (token.endsWith("y")) {
             String stem = token.substring(0, token.length() - 1);
-            if (vowel.matcher(stem).find()) {
+            if (VOWEL_AFTER_CONSONANT.matcher(stem).find()) {
                 token = stem + "i";
             }
         }
@@ -164,21 +169,21 @@ public class PorterStemmer {
         //          if it does not, attempt the next suffix.
         // you may want to write a helper method for this. a matrix of
         // "suffix"/"replacement" pairs might be helpful. It could look like
-        // string[][] step2pairs = {  new string[] {"ational", "ate"}, 
+        // string[][] STEP_TWO_PAIRS = {  new string[] {"ational", "ate"}, 
         //										new string[] {"tional", "tion"}, ....
-        //String stepName = "step2";
-        String step2result = helperMatrixStep(token, step2pairs, stepName.step2);
-        if (!step2result.isEmpty()) {
-            System.out.println("step2 result: " + step2result);
-            token = step2result;
+        //String stepName = "stepTwo";
+        String stepTworesult = helperMatrixStep(token, STEP_TWO_PAIRS, stepName.stepTwo);
+        if (!stepTworesult.isEmpty()) {
+            System.out.println("step2 result: " + stepTworesult);
+            token = stepTworesult;
         }
 
         // step 3
         // program this step. the rules are identical to step 2 and you can use
         // the same helper method. you may also want a matrix here.
-        String step3result = helperMatrixStep(token, step3pairs, stepName.step3);
-        if (!step3result.isEmpty()) {
-            token = step3result;
+        String stepThreeResult = helperMatrixStep(token, STEP_THREE_PAIRS, stepName.stepThree);
+        if (!stepThreeResult.isEmpty()) {
+            token = stepThreeResult;
         }
         // step 4
         // program this step similar to step 2/3, except now the stem must have
@@ -187,8 +192,8 @@ public class PorterStemmer {
         // which would leave the S or T.
         // as before, if one suffix matches, do not try any others even if the 
         // stem does not have measure > 1.
-        
-        String step4result = helperMatrixStep(token, step4pairs, stepName.step4);
+
+        String step4result = helperMatrixStep(token, STEP_FOUR_PAIRS, stepName.stepFour);
         if (!step4result.isEmpty()) {
             token = step4result;
         }
@@ -202,18 +207,18 @@ public class PorterStemmer {
 
     public static String helperMatrixStep(String token, String[][] steppairs, stepName step) {
         String result = "";
-        for (int i = 0; i < steppairs.length; i++) {
-            if (token.endsWith(steppairs[i][0])) {
-                String stem = token.substring(0, token.length() - steppairs[i][0].length());
-                if(step == stepName.step2 | step == stepName.step3){
-                    if (mGr0.matcher(stem).find()) {
-                        result = stem + steppairs[i][1];
+        for (String[] steppair : steppairs) {
+            if (token.endsWith(steppair[0])) {
+                String stem = token.substring(0, token.length() - steppair[0].length());
+                if (step == stepName.stepTwo | step == stepName.stepThree) {
+                    if (MEASURE_GR0.matcher(stem).find()) {
+                        result = stem + steppair[1];
                         break;
                     }
                 }
-                if(step == stepName.step4){
-                    if (mGr1.matcher(stem).find()) {
-                        result = stem + steppairs[i][1];
+                if (step == stepName.stepFour) {
+                    if (MEASURE_GR1.matcher(stem).find()) {
+                        result = stem + steppair[1];
                         break;
                     }
                 }
@@ -221,19 +226,5 @@ public class PorterStemmer {
         }
         return result;
     }
-  /*public static String helperMatrixStep4(String token, String[][] steppairs) {
-        String result = "";
-        for (int i = 0; i < steppairs.length; i++) {
-            if (token.endsWith(steppairs[i][0])) {
-                String stem = token.substring(0, token.length() - steppairs[i][0].length());
-                    if (mGr1.matcher(stem).find()) {
-                        result = stem + steppairs[i][1];
-                        break;
-                    }
 
-            }
-        }
-        return result;
-    }*/
 }
-
