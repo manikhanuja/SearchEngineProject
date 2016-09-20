@@ -31,7 +31,7 @@ public class PorterStemmer {
     private static final Pattern DOUBLE_CONSONANT = Pattern.compile("([^aeiouylsz])\\1" + "$");
     // m equals 1, cvc: token is in Cvc form, where the last CONSONANT_INTERIM is not w, x,
     //			or y.
-    private static final Pattern MEASURE_EQ1_NOT_WXY = Pattern.compile("^(" + CONSONANT + ")?" + VOWEL + "([^aeiouwxy]|" + "(" + CONSONANT + "[^aeiouyxy]))" + "$");
+    private static final Pattern MEASURE_EQ1_NOT_WXY = Pattern.compile("^(" + CONSONANT_INTERIM + ")?" + VOWEL_INTERIM + "([^aeiouwxy]|" + "(" + CONSONANT_INTERIM + "[^aeiouyxy]))" + "$");
 
     private static enum stepName {
         stepTwo, stepThree, stepFour
@@ -147,7 +147,16 @@ public class PorterStemmer {
 
                 token = token + "e";
             }
-            // Pending: use the regex patterns you wrote for 1b*.4 and 1b*.5
+            //use the regex patterns you wrote for 1b*.4 and 1b*.5
+            if (DOUBLE_CONSONANT.matcher(token).find() && !token.endsWith("l") && 
+                    !token.endsWith("s") && !token.endsWith("z")) {
+
+                token = token.substring(0, token.length() - 1);
+            }
+            if (MEASURE_EQ1_NOT_WXY.matcher(token).find()) {
+            
+                token = token + "e";
+            }
         }
 
         // step 1c
@@ -202,6 +211,20 @@ public class PorterStemmer {
         // you can use to see if m=1 and NOT Cvc.
         // all your code should change the variable token, which represents
         // the stemmed term for the token.
+        if(token.endsWith("e")){
+            if (MEASURE_GR1.matcher(token).find()) {
+                token = token.substring(0, token.length() - 1);
+            }
+            if (MEASURE_EQ1.matcher(token).find() && 
+                    !MEASURE_EQ1_NOT_WXY.matcher(token).find()) {
+                token = token.substring(0, token.length() - 1);
+            }
+        }
+        if (DOUBLE_CONSONANT.matcher(token).find() & token.endsWith("l")) {
+            if(MEASURE_GR1.matcher(token).find()){
+                token = token.substring(0, token.length() - 1);
+                }
+            }
         return token;
     }
 
