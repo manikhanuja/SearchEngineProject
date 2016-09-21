@@ -28,10 +28,11 @@ public class PorterStemmer {
     // double consonant: token ends in two consonants that are the same, 
     //			unless they are L, S, or Z. (look up "backreferencing" to help 
     //			with this)
-    private static final Pattern DOUBLE_CONSONANT = Pattern.compile("([^aeiouylsz])\\1" + "$");
+    private static final Pattern DOUBLE_CONSONANT = Pattern.compile("([^aeiouy])\\1" + "$");
     // m equals 1, cvc: token is in Cvc form, where the last CONSONANT_INTERIM is not w, x,
     //			or y.
-    private static final Pattern MEASURE_EQ1_NOT_WXY = Pattern.compile("^(" + CONSONANT_INTERIM + ")?" + VOWEL_INTERIM + "([^aeiouwxy]|" + "(" + CONSONANT_INTERIM + "[^aeiouyxy]))" + "$");
+    private static final Pattern ENDS_WITH_CVC = Pattern.compile(CONSONANT_INTERIM + VOWEL_INTERIM  + CONSONANT_INTERIM  + "$");
+
 
     private static enum stepName {
         stepTwo, stepThree, stepFour
@@ -97,16 +98,20 @@ public class PorterStemmer {
         // step 1a.1
         if (token.endsWith("sses")) {
             token = token.substring(0, token.length() - 2);
+            System.out.println("1a.1 sses: " + token);
         }
         // step 1a.2
         if (token.endsWith("ies")) {
             token = token.substring(0, token.length() - 2);
+            System.out.println("1a.b ies: " + token);
+
         }
         // step 1a.3 - token ends with s and not ss
         if (token.endsWith("s")) {
             if (token.endsWith("ss")) {
             } else {
                 token = token.substring(0, token.length() - 1);
+                System.out.println("1a.3 ends with s and not ss: " + token);
             }
         }
 
@@ -119,6 +124,7 @@ public class PorterStemmer {
             String stem = token.substring(0, token.length() - 3);
             if (MEASURE_GR0.matcher(stem).find()) { // if the pattern matches the stem
                 token = stem + "ee";
+                System.out.println("1b.1 eed: " + token);
             }
         }
         // program the rest of 1b. set the boolean doStep1bb to true if Step 1b* 
@@ -129,6 +135,7 @@ public class PorterStemmer {
                 String stem = token.substring(0, token.length() - 2);
                 if (VOWEL_AFTER_CONSONANT.matcher(stem).find()) {
                     token = stem;
+                    System.out.println("testing condition 1b.2 for ending with ed: "+stem);
                     doStep1bb = true;
                 }
             }
@@ -138,6 +145,7 @@ public class PorterStemmer {
             if (VOWEL_AFTER_CONSONANT.matcher(stem).find()) {
                 token = stem;
                 doStep1bb = true;
+                System.out.println("1b.3 ends with ing: " + token);
             }
         }
         // step 1b*, only if the 1b.2 or 1b.3 were performed.
@@ -146,16 +154,24 @@ public class PorterStemmer {
                     || token.endsWith("iz")) {
 
                 token = token + "e";
+                System.out.println("1b.4 at, iz or bl: " + token);
             }
             //use the regex patterns you wrote for 1b*.4 and 1b*.5
-            if (DOUBLE_CONSONANT.matcher(token).find() && !token.endsWith("l") && 
-                    !token.endsWith("s") && !token.endsWith("z")) {
-
-                token = token.substring(0, token.length() - 1);
+            if (DOUBLE_CONSONANT.matcher(token).find()) {
+               if((!token.endsWith("l") && !token.endsWith("s")) && !token.endsWith("z"))
+                {
+                    token = token.substring(0, token.length() - 1);
+                    System.out.println("1b.5a double consonant test: " + token);
+                } else {
+                }
             }
-            if (MEASURE_EQ1_NOT_WXY.matcher(token).find()) {
-            
+            if(MEASURE_EQ1.matcher(token).find()){
+            if (ENDS_WITH_CVC.matcher(token).find()) {
+                if(!token.endsWith("w") && !token.endsWith("x") && !token.endsWith("y")){
                 token = token + "e";
+                System.out.println("1b.5b measure equals 1 and not wxy: " + token);
+                }
+            }
             }
         }
 
@@ -166,6 +182,7 @@ public class PorterStemmer {
             String stem = token.substring(0, token.length() - 1);
             if (VOWEL_AFTER_CONSONANT.matcher(stem).find()) {
                 token = stem + "i";
+                System.out.println("1c.1 ends with y: " + token);
             }
         }
 
@@ -193,6 +210,7 @@ public class PorterStemmer {
         String stepThreeResult = helperMatrixStep(token, STEP_THREE_PAIRS, stepName.stepThree);
         if (!stepThreeResult.isEmpty()) {
             token = stepThreeResult;
+            System.out.println("Step 3 " + token);
         }
         // step 4
         // program this step similar to step 2/3, except now the stem must have
@@ -205,6 +223,7 @@ public class PorterStemmer {
         String step4result = helperMatrixStep(token, STEP_FOUR_PAIRS, stepName.stepFour);
         if (!step4result.isEmpty()) {
             token = step4result;
+            System.out.println("step 4: " + token);
         }
         // step 5
         // program this step. you have a regex for m=1 and for "Cvc", which
@@ -214,15 +233,21 @@ public class PorterStemmer {
         if(token.endsWith("e")){
             if (MEASURE_GR1.matcher(token).find()) {
                 token = token.substring(0, token.length() - 1);
+                System.out.println("step 5a ends with e & measure greater than 1: " + token);
             }
-            if (MEASURE_EQ1.matcher(token).find() && 
-                    !MEASURE_EQ1_NOT_WXY.matcher(token).find()) {
+            if(MEASURE_EQ1.matcher(token).find()){
+            if (!ENDS_WITH_CVC.matcher(token).find()) {
+                if(!token.endsWith("w") && !token.endsWith("x") && !token.endsWith("y")){
                 token = token.substring(0, token.length() - 1);
+                System.out.println("step 5a ends with e & measure equals than 1: " + token);
+            }
+            }
             }
         }
-        if (DOUBLE_CONSONANT.matcher(token).find() & token.endsWith("l")) {
+        if (DOUBLE_CONSONANT.matcher(token).find() && token.endsWith("l")) {
             if(MEASURE_GR1.matcher(token).find()){
                 token = token.substring(0, token.length() - 1);
+                System.out.println("step 5b double consonant and ends with l & measure greater than 1: " + token);
                 }
             }
         return token;
