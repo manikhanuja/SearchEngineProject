@@ -11,7 +11,7 @@ import java.util.Scanner;
  * @author manikhanuja
  */
 public class TestPorterStemmer {
-   /* public static void main(String[] args) {
+    public static void main(String[] args) {
         
         Scanner scan = new Scanner(System.in);
         System.out.println("Enter token");
@@ -22,10 +22,10 @@ public class TestPorterStemmer {
             }
             String processToken;
             String normalizeToken;
-            normalizeToken = NormalizeToken.normalizeToken(token);
-            System.out.println("Normalized Token: " + normalizeToken);
-            processToken = PorterStemmer.processToken(normalizeToken);
+            //normalizeToken = NormalizeToken.normalizeToken(token);
+           // System.out.println("Normalized Token: " + normalizeToken);
+            processToken = PorterStemmer.processToken(token);
             System.out.println("stem: " + processToken);
         }
-    }*/
+    }
 }
