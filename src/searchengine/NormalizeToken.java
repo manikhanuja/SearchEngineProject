@@ -5,12 +5,15 @@
  */
 package searchengine;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 /**
  *
  * @author manikhanuja
  */
 public class NormalizeToken {
-    public static String normalizeToken(String token) {
+    public static ArrayList normalizeToken(String token) {
         //convert the token to lower case
         //String[] term = new String[]{};
         token = token.toLowerCase();
@@ -23,15 +26,22 @@ public class NormalizeToken {
         // remove all apostropes (single quotes)
         token = token.replaceAll("[']", "");
         System.out.println("Remove all single quotes: " + token);
-
+        ArrayList<String> term = new ArrayList<>();
+        
+        
         if (token.contains("-")) {
-            String[] term = token.split("[-]");
-            for (String s : term) {
-
+            
+            term.add(Arrays.toString(token.split("[-]")));
+        
+            term.stream().forEach((s) -> {
                 System.out.println("print tokens: " + s);
-            }
+            });
             token = token.replaceAll("[-]", "");
+            System.out.println("TOKEN:::: "+token);
+            
         }
-        return token;
+        
+            term.add(token);
+        return term;
     }
 }

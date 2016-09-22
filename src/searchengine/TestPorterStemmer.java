@@ -5,6 +5,8 @@
  * and open the template in the editor.
  */
 package searchengine;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Scanner;
 /**
  *
@@ -21,11 +23,14 @@ public class TestPorterStemmer {
                 break;
             }
             String processToken;
-            String normalizeToken;
-            //normalizeToken = NormalizeToken.normalizeToken(token);
-           // System.out.println("Normalized Token: " + normalizeToken);
-            processToken = PorterStemmer.processToken(token);
-            System.out.println("stem: " + processToken);
+            ArrayList<String> normalizeToken=new ArrayList<>();
+            normalizeToken = NormalizeToken.normalizeToken(token);
+            Iterator iter=normalizeToken.iterator();
+            while(iter.hasNext()){ 
+                System.out.println("Normalized Token: " + iter.next().toString());
+                processToken = PorterStemmer.processToken(iter.next().toString());
+                System.out.println("stem: " + processToken);
+            }
         }
     }
 }
