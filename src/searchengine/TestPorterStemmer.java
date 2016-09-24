@@ -13,9 +13,9 @@ import java.util.Scanner;
  * @author manikhanuja
  */
 public class TestPorterStemmer {
-    public static void main(String[] args) {
+   /* public static void main(String[] args) {
         
-        Scanner scan = new Scanner(System.in);
+       Scanner scan = new Scanner(System.in);
         System.out.println("Enter token");
         while (scan.hasNext()) {
             String token = scan.next();
@@ -32,5 +32,5 @@ public class TestPorterStemmer {
                 System.out.println("stem: " + processToken);
             }
         }
-    }
+    }*/
 }
