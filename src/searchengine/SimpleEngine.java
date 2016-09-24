@@ -11,8 +11,8 @@ A very simple search engine. Uses an inverted index over a folder of TXT files.
 */
 public class SimpleEngine {
 
-   public static void main(String[] args) throws IOException {
-      final Path currentWorkingPath = Paths.get("/Users/manikhanuja/NetBeansProjects/PositionalIndex/PositionalIndex/Files").toAbsolutePath();
+ public static void main(String[] args) throws IOException {
+      final Path currentWorkingPath = Paths.get("C:\\Users\\Mayankkasturia\\Documents\\NetBeansProjects\\SearchEngineProject\\Files").toAbsolutePath();
       
       // the inverted index
       final NaiveInvertedIndex index = new NaiveInvertedIndex();
