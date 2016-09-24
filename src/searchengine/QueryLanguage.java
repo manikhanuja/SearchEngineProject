@@ -37,7 +37,7 @@ public class QueryLanguage {
     public static void freeWordQuery(NaiveInvertedIndex index) {
         String token[] = index.getDictionary();
         String[] word = readQueryFromUser();
-        Set<Integer> tempSet = new HashSet<>();
+        Set<Integer> tempDocSet = new HashSet<>();
         for (String temp : word) {
             temp = temp.toLowerCase();
             int y = Arrays.binarySearch(token, temp);
@@ -46,27 +46,32 @@ public class QueryLanguage {
                 System.exit(0);
             } else {
 
-                  tempSet.addAll(index.getDocumentId(temp));
+                  tempDocSet.addAll(index.getDocumentId(temp));
             }
         }
-        System.out.println("New Index: " + tempSet);
+        System.out.println("New Index: " + tempDocSet);
         freeWordQuery(index);
     }
 
-  /* public static void phraseWordQuery(NaiveInvertedIndex index) {
+   public static void phraseWordQuery(NaiveInvertedIndex index) {
         String token[] = index.getDictionary();
         String[] word = readQueryFromUser();
-        Set<String> tempSet = new HashSet<>();
+        Set<Integer> tempDocSet = new HashSet<>();
         for (String temp : word) {
+            temp = temp.toLowerCase();
             int y = Arrays.binarySearch(token, temp);
             if (y < 0) {
                 System.out.println("Word does not present ");
                 System.exit(0);
             } else {
-                tempSet.addAll(index.getPostings(temp));
+                if(tempDocSet.isEmpty()){
+                tempDocSet.addAll(index.getDocumentId(temp));
+                } else {
+                    tempDocSet.retainAll(index.getDocumentId(temp));
+                }
             }
         }
-        System.out.println("New Index: " + tempSet);
+        System.out.println("New Index: " + tempDocSet);
         phraseWordQuery(index);
-    }*/
+    }
 }

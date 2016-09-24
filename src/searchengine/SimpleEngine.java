@@ -59,7 +59,8 @@ public class SimpleEngine {
       });
       
       //printResults(index, fileNames);
-      QueryLanguage.freeWordQuery(index);
+      QueryLanguage.phraseWordQuery(index);
+      //QueryLanguage.freeWordQuery(index);
       
       // Implement the same program as in Homework 1: ask the user for a term,
       // retrieve the postings list for that term, and print the names of the 
