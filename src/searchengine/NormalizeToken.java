@@ -30,15 +30,18 @@ public class NormalizeToken {
         
         
         if (token.contains("-")) {
-            
-            term.add(Arrays.toString(token.split("[-]")));
-        
-            term.stream().forEach((s) -> {
-                System.out.println("print tokens: " + s);
-            });
+           
+            String[] str=token.split("-");
+            for(int i=0;i<str.length;i++){
+            String p=str[i];
+            term.add(p);
+            }
+            //term.add(Arrays.toString(token.split("-")));
+            //term.stream().forEach((s) -> {
+              //  System.out.println("print tokens: " + s);
+            //});
             token = token.replaceAll("[-]", "");
-            System.out.println("TOKEN:::: "+token);
-            
+            //System.out.println("TOKEN:::: "+token);
         }
         
             term.add(token);

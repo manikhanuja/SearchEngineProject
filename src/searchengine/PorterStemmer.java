@@ -127,7 +127,7 @@ public class PorterStemmer {
             }
         }
         // program the rest of 1b. set the boolean doStep1bb to true if Step 1b* 
-        // should be performed.
+        // should be performed. 
         if (token.endsWith("ed")) {
             if (token.endsWith("eed")) {
             } else {

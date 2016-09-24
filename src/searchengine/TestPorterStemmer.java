@@ -25,12 +25,17 @@ public class TestPorterStemmer {
             String processToken;
             ArrayList<String> normalizeToken=new ArrayList<>();
             normalizeToken = NormalizeToken.normalizeToken(token);
-            Iterator iter=normalizeToken.iterator();
-            while(iter.hasNext()){ 
-                System.out.println("Normalized Token: " + iter.next().toString());
-                processToken = PorterStemmer.processToken(iter.next().toString());
+                //System.out.println("Normalized Token: " + normalizeToken);
+                for(String tkn:normalizeToken){
+                //System.out.println("we are on "+tkn);
+                processToken = PorterStemmer.processToken(tkn);
                 System.out.println("stem: " + processToken);
-            }
+                }
+            
         }
-    }
-}
+    }}
+
+               
+                
+                
+                
