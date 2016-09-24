@@ -12,30 +12,34 @@ import java.util.Scanner;
  *
  * @author manikhanuja
  */
-public class TestPorterStemmer {
-    public static void main(String[] args) {
-        
-        Scanner scan = new Scanner(System.in);
-        System.out.println("Enter token");
-        while (scan.hasNext()) {
-            String token = scan.next();
-            if (token.equals("q")) {
-                break;
-            }
-            String processToken;
-            ArrayList<String> normalizeToken=new ArrayList<>();
-            normalizeToken = NormalizeToken.normalizeToken(token);
-                //System.out.println("Normalized Token: " + normalizeToken);
-                for(String tkn:normalizeToken){
-                //System.out.println("we are on "+tkn);
-                processToken = PorterStemmer.processToken(tkn);
-                System.out.println("stem: " + processToken);
-                }
-            
-        }
-    }}
+//public class TestPorterStemmer {
+//   public static void main(String[] args) {
+//        
+//       Scanner scan = new Scanner(System.in);
+//        System.out.println("Enter token");
+//        while (scan.hasNext()) {
+//            String token = scan.next();
+//            if (token.equals("q")) {
+//                break;
+//            }
+//            String processToken;
+//            ArrayList<String> normalizeToken=new ArrayList<>();
+//            normalizeToken = NormalizeToken.normalizeToken(token);
+//                //System.out.println("Normalized Token: " + normalizeToken);
+//                for(String tkn:normalizeToken){
+//                //System.out.println("we are on "+tkn);
+//                processToken = PorterStemmer.processToken(tkn);
+//                System.out.println("stem: " + processToken);
+//                }
+//            
+//        }
+//
+//    }}
 
                
                 
                 
-                
+
+    
+
+
