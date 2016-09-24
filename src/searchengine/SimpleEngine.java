@@ -16,7 +16,6 @@ public class SimpleEngine {
       
       // the inverted index
       final NaiveInvertedIndex index = new NaiveInvertedIndex();
-      QueryLanguage query = new QueryLanguage();
       // the list of file names that were processed
       final List<String> fileNames = new ArrayList<String>();
 
@@ -37,10 +36,10 @@ public class SimpleEngine {
          public FileVisitResult visitFile(Path file,
           BasicFileAttributes attrs) throws FileNotFoundException {
             // only process .txt files
-            if (file.toString().endsWith(".json")) {
+            if (file.toString().endsWith(".json") ) {
                // we have found a .txt file; add its name to the fileName list,
                // then index the file and increase the document ID counter.
-              //System.out.println("Indexing file " + file.getFileName());
+              System.out.println("Indexing file " + file.getFileName());
                
                
                fileNames.add(file.getFileName().toString());
@@ -88,11 +87,11 @@ public class SimpleEngine {
        SimpleTokenStream simpleTokenObj= new SimpleTokenStream(file);
        int pos=0;
        while(simpleTokenObj.hasNextToken()){
-           String fn= file.getName();
-           index.addTerm(simpleTokenObj.nextToken(), fn,pos);
+          // String fn= file.getName();
+           index.addTerm(simpleTokenObj.nextToken(), docID,pos);
            pos++;
            
-       }      
+       }  
    }
 
    private static void printResults(NaiveInvertedIndex index, 
@@ -115,10 +114,9 @@ public class SimpleEngine {
        
        String token[]=index.getDictionary();
        for(String temp:token){
-           HashMap<String,List<Integer>> finalList=(index.getPostings(temp));
+           HashMap<Integer,List<Integer>> finalList=(index.getPostings(temp));
            System.out.println(temp+" : "+finalList);
        }
        
    }
-   
 }

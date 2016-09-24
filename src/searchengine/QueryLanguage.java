@@ -37,7 +37,7 @@ public class QueryLanguage {
     public static void freeWordQuery(NaiveInvertedIndex index) {
         String token[] = index.getDictionary();
         String[] word = readQueryFromUser();
-        Set<String> tempSet = new HashSet<>();
+        Set<Integer> tempSet = new HashSet<>();
         for (String temp : word) {
             temp = temp.toLowerCase();
             int y = Arrays.binarySearch(token, temp);
