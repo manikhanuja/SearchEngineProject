@@ -43,7 +43,7 @@ public class NaiveInvertedIndex {
         // TO-DO: return the postings list for the given term from the index map.
         return mIndex.get(term).keySet();
     }
-
+   
     public int getTermCount() {
         // TO-DO: return the number of terms in the index.
 
