@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.regex.Pattern;
+import static searchengine.Soundex.soundex;
 
 /**
  *
@@ -26,6 +27,7 @@ public class QueryLanguage {
         System.out.println(":index - for indexing and querying");
         System.out.println(":stem - for normalizing and then stemming the token");
         System.out.println(":vocab - for printing the vocabulary");
+        System.out.println(":soundex - for calling soundex algorithm");
         System.out.println(":q - to quit the application");
         String query = readQueryFromUser();
         // implementing special queries
@@ -65,6 +67,12 @@ public class QueryLanguage {
             readQueryFromUser(index);
         }
         }
+        }
+        if (query.equalsIgnoreCase(":soundex")) {
+            String code1 = soundex("Mani");
+            String code2 = soundex("Money");
+            System.out.println(code1 + ": " + "Mani");
+            System.out.println(code2 + ": " + "Money");
         }
         readQueryFromUser(index);
     }
