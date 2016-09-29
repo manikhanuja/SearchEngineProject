@@ -23,10 +23,10 @@ public class QueryLanguage {
     public static void readQueryFromUser(NaiveInvertedIndex index) {
 
         System.out.println("Main Menu");
-       /* System.out.println(":index - for indexing and querying");
+        System.out.println(":index - for indexing and querying");
         System.out.println(":stem - for normalizing and then stemming the token");
         System.out.println(":vocab - for printing the vocabulary");
-        System.out.println(":q - to quit the application");*/
+        System.out.println(":q - to quit the application");
         String query = readQueryFromUser();
         // implementing special queries
         // :q to exit
@@ -36,81 +36,91 @@ public class QueryLanguage {
         }
         // :stem token take the token string, stem it and then print the stemmed term
         if (query.equalsIgnoreCase(":stem")) {
-            callStemmer();
+            callStemmer(index);
         }
-        //Pending
-        // :index directoryname - index the folder specified by directoryname and then begins querying it
         
         //vocab - print all the terms in the vocabulary of the corpus, one term per line. Then print the count of the total number of vocabulary terms
         if (query.equalsIgnoreCase(":vocab")) {
             getVocabulary(index);
-            System.exit(0);
         }
+        //Pending
+        // :index directoryname - index the folder specified by directoryname and then begins querying it
         
         if(query.equalsIgnoreCase(":index")){
-            //if(query.contains(" ")){
-                AndWordQuery(index);
-            
+            int counter = 0;
+            System.out.println("Enter Query or :q to return to Main Menu: ");
+            while(counter == 0)
+            {
+            String query1 = readQueryFromUser();
+            if(query1.contains(" ")){
+                andWordQuery(index,query1);
+            }
+            if(query1.contains("+")){
+                freeWordQuery(index,query1);
+            }
+            if (query1.equalsIgnoreCase(":q")) {
+            System.out.println("Exit index, return to the main menu!");
+            readQueryFromUser(index);
         }
+        }
+        }
+        readQueryFromUser(index);
     }
     
 public static String readQueryFromUser() {
-        System.out.println("Enter User Query: ");
         Scanner s = new Scanner(System.in);
         String query = s.nextLine();
         return query;
     }
 
-    public static void freeWordQuery(NaiveInvertedIndex index) {
+    public static void freeWordQuery(NaiveInvertedIndex index, String query) {
+         System.out.println("I am OR Query");
         String token[] = index.getDictionary();
-        String query = readQueryFromUser();
-        String [] word = query.split(Pattern.quote(" "));
+        String [] word = query.split("[//+]");
        // String [] word = strSplit(query, "\\+");
         Set<Integer> tempDocSet = new HashSet<>();
         for (String temp : word) {
             temp = temp.toLowerCase();
             int y = Arrays.binarySearch(token, temp);
             if (y < 0) {
-                System.out.println("Word does not present ");
-                System.exit(0);
+                System.out.println("Word does not present, enter query again or :q to quit ");
             } else {
 
                 tempDocSet.addAll(index.getDocumentId(temp));
             }
         }
         System.out.println("New Index: " + tempDocSet);
-        freeWordQuery(index);
+       // freeWordQuery(index);
     }
 
-    public static void AndWordQuery(NaiveInvertedIndex index) {
+    public static void andWordQuery(NaiveInvertedIndex index, String query) {
         System.out.println("I am AND Query");
         String token[] = index.getDictionary();
-        String query = readQueryFromUser();
         String [] word = query.split("[ ]");
         Set<Integer> tempDocSet = new HashSet<>();
         for (String temp : word) {
             temp = temp.toLowerCase();
             int y = Arrays.binarySearch(token, temp);
             if (y < 0) {
-                System.out.println("Word does not present ");
-                System.exit(0);
+                System.out.println("Word does not present, enter query again or :q to quit ");
             } else if (tempDocSet.isEmpty()) {
                 tempDocSet = index.getDocumentId(temp);
-                System.out.println("Temp Doc set with Postings1: " + tempDocSet);
+                //System.out.println("Temp Doc for " + temp + tempDocSet);
             } else {
                 tempDocSet.retainAll(index.getDocumentId(temp));
+                //System.out.println("Temp Doc for " + temp + tempDocSet);
             }
         }
-        System.out.println("New Index: " + tempDocSet);
-        AndWordQuery(index);
+        System.out.println("Returned Index: " + tempDocSet);
+       // andWordQuery(index);
     }
 
     /*public static void phraseWordQuery(NaiveInvertedIndex index) {
+        System.out.println("I am PHRASE Query");
         String token[] = index.getDictionary();
         String[] word = readQueryFromUser();
         HashMap<Integer, List<Integer>> tempPosSet1 = new HashMap<>();
         HashMap<Integer, List<Integer>> tempPosSet2;
-
         for (String temp : word) {
             temp = temp.toLowerCase();
             int y = Arrays.binarySearch(token, temp);
@@ -137,11 +147,8 @@ public static String readQueryFromUser() {
                             if (!setVal.isEmpty()) {
                                 tempPosSet3.put(k, setVal);
                             }
-
                         }
-
                     }
-
                 }
                 tempPosSet1 = tempPosSet3;
             }
@@ -149,7 +156,7 @@ public static String readQueryFromUser() {
         System.out.println("New Index: " + tempPosSet1);
         phraseWordQuery(index);
     } */
-    public static void callStemmer()
+    public static void callStemmer(NaiveInvertedIndex index)
     {
         Scanner scan = new Scanner(System.in);
             System.out.println("Enter token");
@@ -157,8 +164,8 @@ public static String readQueryFromUser() {
                 String token = scan.next();
                 String processToken;
                 if (token.equalsIgnoreCase(":q")) {
-                    System.out.println("Bye!");
-                    System.exit(0);
+                    System.out.println("Exit Stemmer");
+                    readQueryFromUser(index);
                 }
                 ArrayList<String> normalizeToken;
                 normalizeToken = NormalizeToken.normalizeToken(token);
@@ -178,5 +185,6 @@ public static String readQueryFromUser() {
                 System.out.println(vocabTerm);
             }
             System.out.println("Count of total vocabulary terms: " + index.getTermCount());
+            System.out.println("Exit vocabulary and return to Main Menu!" );
     }
 }
