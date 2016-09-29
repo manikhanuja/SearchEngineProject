@@ -53,6 +53,8 @@ public class QueryLanguage {
             {
             String query1 = readQueryFromUser();
             if(query1.contains(" ")){
+                query1 = query1.replaceAll("[ ]", "&");
+                //System.out.println("Replacing space with & operator: " + query1);
                 andWordQuery(index,query1);
             }
             if(query1.contains("+")){
@@ -96,7 +98,7 @@ public static String readQueryFromUser() {
     public static void andWordQuery(NaiveInvertedIndex index, String query) {
         System.out.println("I am AND Query");
         String token[] = index.getDictionary();
-        String [] word = query.split("[ ]");
+        String [] word = query.split("[&]");
         Set<Integer> tempDocSet = new HashSet<>();
         for (String temp : word) {
             temp = temp.toLowerCase();
