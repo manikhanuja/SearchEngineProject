@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -20,45 +21,51 @@ import java.util.Set;
 public class QueryLanguage {
 
     public static void readQueryFromUser(NaiveInvertedIndex index) {
-       String[] words = readQueryFromUser();
-        for (String word : words) {
-            System.out.println("Print input: " + word);
+
+        System.out.println("Main Menu");
+       /* System.out.println(":index - for indexing and querying");
+        System.out.println(":stem - for normalizing and then stemming the token");
+        System.out.println(":vocab - for printing the vocabulary");
+        System.out.println(":q - to quit the application");*/
+        String query = readQueryFromUser();
         // implementing special queries
         // :q to exit
-        if (word.equalsIgnoreCase(":q")) {
+        if (query.equalsIgnoreCase(":q")) {
             System.out.println("Bye!");
             System.exit(0);
         }
         // :stem token take the token string, stem it and then print the stemmed term
-        if (word.equalsIgnoreCase(":stem")) {
+        if (query.equalsIgnoreCase(":stem")) {
             callStemmer();
         }
         //Pending
         // :index directoryname - index the folder specified by directoryname and then begins querying it
         
         //vocab - print all the terms in the vocabulary of the corpus, one term per line. Then print the count of the total number of vocabulary terms
-        if (word.equalsIgnoreCase(":vocab")) {
+        if (query.equalsIgnoreCase(":vocab")) {
             getVocabulary(index);
             System.exit(0);
         }
+        
+        if(query.equalsIgnoreCase(":index")){
+            //if(query.contains(" ")){
+                AndWordQuery(index);
+            
         }
     }
     
-public static String[] readQueryFromUser() {
-        System.out.println("Enter a term to search for: ");
+public static String readQueryFromUser() {
+        System.out.println("Enter User Query: ");
         Scanner s = new Scanner(System.in);
-        String word = s.nextLine();
-        String[] words;
-        words = word.split("[ ]");
-        for (String a : words) {
-            System.out.println("Print input: " + a);
-        }
-        return words;
+        String query = s.nextLine();
+        return query;
     }
 
     public static void freeWordQuery(NaiveInvertedIndex index) {
         String token[] = index.getDictionary();
-        String[] word = readQueryFromUser();
+        String query = readQueryFromUser();
+        String [] word = query.split(Pattern.quote(" "));
+       // String [] word = strSplit(query, "\\+");
         Set<Integer> tempDocSet = new HashSet<>();
         for (String temp : word) {
             temp = temp.toLowerCase();
@@ -76,11 +83,11 @@ public static String[] readQueryFromUser() {
     }
 
     public static void AndWordQuery(NaiveInvertedIndex index) {
+        System.out.println("I am AND Query");
         String token[] = index.getDictionary();
-        String[] word = readQueryFromUser();
+        String query = readQueryFromUser();
+        String [] word = query.split("[ ]");
         Set<Integer> tempDocSet = new HashSet<>();
-        HashMap<Integer, List<Integer>> tempPosSet1 = new HashMap<>();
-
         for (String temp : word) {
             temp = temp.toLowerCase();
             int y = Arrays.binarySearch(token, temp);
@@ -98,7 +105,7 @@ public static String[] readQueryFromUser() {
         AndWordQuery(index);
     }
 
-    public static void phraseWordQuery(NaiveInvertedIndex index) {
+    /*public static void phraseWordQuery(NaiveInvertedIndex index) {
         String token[] = index.getDictionary();
         String[] word = readQueryFromUser();
         HashMap<Integer, List<Integer>> tempPosSet1 = new HashMap<>();
@@ -141,7 +148,7 @@ public static String[] readQueryFromUser() {
         }
         System.out.println("New Index: " + tempPosSet1);
         phraseWordQuery(index);
-    }
+    } */
     public static void callStemmer()
     {
         Scanner scan = new Scanner(System.in);
