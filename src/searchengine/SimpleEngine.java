@@ -34,7 +34,7 @@ public class SimpleEngine {
                     BasicFileAttributes attrs) throws FileNotFoundException {
                 // only process .txt files
                 if (file.toString().endsWith(".json")) {
-                    // we have found a .txt file; add its name to the fileName list,
+                    // we have found a .json file; add its name to the fileName list,
                     // then index the file and increase the document ID counter.
                     System.out.println("Indexing file " + file.getFileName());
 
@@ -53,11 +53,8 @@ public class SimpleEngine {
             }
 
         });
-
-        //printResults(index, fileNames);
-        QueryLanguage.phraseWordQuery(index);
-        //QueryLanguage.freeWordQuery(index);
-
+        
+        QueryLanguage.readQueryFromUser(index);
         // Implement the same program as in Homework 1: ask the user for a term,
         // retrieve the postings list for that term, and print the names of the 
         // documents which contain the term.

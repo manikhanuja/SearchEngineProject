@@ -19,20 +19,39 @@ import java.util.Set;
  */
 public class QueryLanguage {
 
-    public static String[] readQueryFromUser() {
+    public static void readQueryFromUser(NaiveInvertedIndex index) {
+       String[] words = readQueryFromUser();
+        for (String word : words) {
+            System.out.println("Print input: " + word);
+        // implementing special queries
+        // :q to exit
+        if (word.equalsIgnoreCase(":q")) {
+            System.out.println("Bye!");
+            System.exit(0);
+        }
+        // :stem token take the token string, stem it and then print the stemmed term
+        if (word.equalsIgnoreCase(":stem")) {
+            callStemmer();
+        }
+        //Pending
+        // :index directoryname - index the folder specified by directoryname and then begins querying it
+        
+        //vocab - print all the terms in the vocabulary of the corpus, one term per line. Then print the count of the total number of vocabulary terms
+        if (word.equalsIgnoreCase(":vocab")) {
+            getVocabulary(index);
+            System.exit(0);
+        }
+        }
+    }
+    
+public static String[] readQueryFromUser() {
         System.out.println("Enter a term to search for: ");
         Scanner s = new Scanner(System.in);
         String word = s.nextLine();
-        //ArrayList<String> words = new ArrayList<>();
         String[] words;
-        //term.add(Arrays.toString(token.split("[-]")));
         words = word.split("[ ]");
         for (String a : words) {
             System.out.println("Print input: " + a);
-        }
-        if (word.equalsIgnoreCase("q")) {
-            System.out.println("Bye!");
-            System.exit(0);
         }
         return words;
     }
@@ -56,12 +75,35 @@ public class QueryLanguage {
         freeWordQuery(index);
     }
 
+    public static void AndWordQuery(NaiveInvertedIndex index) {
+        String token[] = index.getDictionary();
+        String[] word = readQueryFromUser();
+        Set<Integer> tempDocSet = new HashSet<>();
+        HashMap<Integer, List<Integer>> tempPosSet1 = new HashMap<>();
+
+        for (String temp : word) {
+            temp = temp.toLowerCase();
+            int y = Arrays.binarySearch(token, temp);
+            if (y < 0) {
+                System.out.println("Word does not present ");
+                System.exit(0);
+            } else if (tempDocSet.isEmpty()) {
+                tempDocSet = index.getDocumentId(temp);
+                System.out.println("Temp Doc set with Postings1: " + tempDocSet);
+            } else {
+                tempDocSet.retainAll(index.getDocumentId(temp));
+            }
+        }
+        System.out.println("New Index: " + tempDocSet);
+        AndWordQuery(index);
+    }
+
     public static void phraseWordQuery(NaiveInvertedIndex index) {
         String token[] = index.getDictionary();
         String[] word = readQueryFromUser();
         HashMap<Integer, List<Integer>> tempPosSet1 = new HashMap<>();
-        HashMap<Integer, List<Integer>> tempPosSet2 = new HashMap<>();
-        
+        HashMap<Integer, List<Integer>> tempPosSet2;
+
         for (String temp : word) {
             temp = temp.toLowerCase();
             int y = Arrays.binarySearch(token, temp);
@@ -86,9 +128,9 @@ public class QueryLanguage {
                                 System.out.println("print value: " + k + ": [" + setVal + "]");
                             }
                             if (!setVal.isEmpty()) {
-                            tempPosSet3.put(k, setVal);
-                        }
-                        
+                                tempPosSet3.put(k, setVal);
+                            }
+
                         }
 
                     }
@@ -99,5 +141,35 @@ public class QueryLanguage {
         }
         System.out.println("New Index: " + tempPosSet1);
         phraseWordQuery(index);
+    }
+    public static void callStemmer()
+    {
+        Scanner scan = new Scanner(System.in);
+            System.out.println("Enter token");
+            while (scan.hasNext()) {
+                String token = scan.next();
+                String processToken;
+                if (token.equalsIgnoreCase(":q")) {
+                    System.out.println("Bye!");
+                    System.exit(0);
+                }
+                ArrayList<String> normalizeToken;
+                normalizeToken = NormalizeToken.normalizeToken(token);
+                System.out.println("Normalized Token: " + normalizeToken);
+                for (String tkn : normalizeToken) {
+                    System.out.println("we are on " + tkn);
+                    processToken = PorterStemmer.processToken(tkn);
+                    System.out.println("stem: " + processToken);
+                }
+            }
+    }
+    public static void getVocabulary(NaiveInvertedIndex index)
+    {
+        String token[] = index.getDictionary();
+            System.out.println("Vocabulary! ");
+            for (String vocabTerm : token) {
+                System.out.println(vocabTerm);
+            }
+            System.out.println("Count of total vocabulary terms: " + index.getTermCount());
     }
 }
