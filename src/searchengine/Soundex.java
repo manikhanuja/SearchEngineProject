@@ -14,9 +14,12 @@ public class Soundex {
 
     public static String soundex(String sname) {
         char[] coder = sname.toUpperCase().toCharArray();
-        char firstLetter = coder[0];
+        char firstCharacter = coder[0];
 
-        // conversion of letters in name to numeric code
+        /* conversion of letters in name to alpha-numeric code
+        only consonants in the name are converted to the code, so that names with similar
+        sound can have the same code. for eg: Mani or Money will return the same code.
+        */
         for (int i = 0; i < coder.length; i++) {
             switch (coder[i]) {
                 case 'B':
@@ -55,7 +58,7 @@ public class Soundex {
             }
         }
         // remove any dulipcate items
-        String output = "" + firstLetter;
+        String output = "" + firstCharacter;
         for (int i = 1; i < coder.length; i++) {
             if (coder[i] != coder[i - 1] && coder[i] != '0') {
                 output += coder[i];
