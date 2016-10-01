@@ -13,10 +13,10 @@ package searchengine;
 public class Soundex {
 
     public static String soundex(String sname) {
-        char[] coder = sname.toUpperCase().toCharArray();
+        char coder[] = sname.toUpperCase().toCharArray();
         char firstCharacter = coder[0];
 
-        /* conversion of letters in name to alpha-numeric code
+        /* conversion of each character in name to alpha-numeric code
         only consonants in the name are converted to the code, so that names with similar
         sound can have the same code. for eg: Mani or Money will return the same code.
         */
