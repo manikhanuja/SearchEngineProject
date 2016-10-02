@@ -17,10 +17,10 @@ public class SimpleEngine {
         final NaiveInvertedIndex index = new NaiveInvertedIndex();
         // the list of file names that were processed
         final List<String> fileNames = new ArrayList<String>();
+        final List<Integer> mDocId = new ArrayList<>();
         // This is our standard "walk through all .txt files" code.
         Files.walkFileTree(currentWorkingPath, new SimpleFileVisitor<Path>() {
             int mDocumentID = 0;
-
             public FileVisitResult preVisitDirectory(Path dir,
                     BasicFileAttributes attrs) {
                 // make sure we only process the current working directory
@@ -36,11 +36,14 @@ public class SimpleEngine {
                 if (file.toString().endsWith(".json")) {
                     // we have found a .json file; add its name to the fileName list,
                     // then index the file and increase the document ID counter.
-                    System.out.println("Indexing file " + file.getFileName());
+                    //System.out.println("Indexing file " + file.getFileName());
 
                     fileNames.add(file.getFileName().toString());
                     indexFile(file.toFile(), index, mDocumentID);
+                    System.out.println("IDocIDs " + mDocumentID);
+                    mDocId.add(mDocumentID);
                     mDocumentID++;
+                    
                 }
                 return FileVisitResult.CONTINUE;
             }
@@ -53,8 +56,10 @@ public class SimpleEngine {
             }
 
         });
-        
-        QueryLanguage.readQueryFromUser(index);
+        for(int a : mDocId){
+            System.out.println("Document Id: "+a);
+        }
+        QueryLanguage.readQueryFromUser(index, mDocId);
         // Implement the same program as in Homework 1: ask the user for a term,
         // retrieve the postings list for that term, and print the names of the 
         // documents which contain the term.

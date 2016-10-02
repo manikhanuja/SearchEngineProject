@@ -24,7 +24,7 @@ import java.util.TreeSet;
  */
 public class QueryLanguage {
 
-    public static void readQueryFromUser(NaiveInvertedIndex index) {
+    public static void readQueryFromUser(NaiveInvertedIndex index, List docId) {
 
         System.out.println("Main Menu");
         System.out.println(":index - for indexing and querying");
@@ -41,7 +41,7 @@ public class QueryLanguage {
         }
         // :stem token take the token string, stem it and then print the stemmed term
         if (query.equalsIgnoreCase(":stem")) {
-            callStemmer(index);
+            callStemmer(index,docId);
         }
 
         //vocab - print all the terms in the vocabulary of the corpus, one term per line. Then print the count of the total number of vocabulary terms
@@ -55,12 +55,13 @@ public class QueryLanguage {
             int counter = 0;
             System.out.println("Enter Query or :q to return to Main Menu: ");
             while (counter == 0) {
-                String query1 = readQueryFromUser();
-                queryParser(index, query1);
+              String query1 = readQueryFromUser();
+                //queryParser(index, query1,docId);
+                notWordQuery(index,query1,docId);
                 
             if (query1.equalsIgnoreCase(":q")) {
             System.out.println("Exit index, return to the main menu!");
-            readQueryFromUser(index);
+            readQueryFromUser(index,docId);
         }
             }
         }
@@ -70,10 +71,10 @@ public class QueryLanguage {
             System.out.println(code1 + ": " + "Mani");
             System.out.println(code2 + ": " + "Money");
         }
-        readQueryFromUser(index);
+        readQueryFromUser(index,docId);
     }
 
-    public static void queryParser(NaiveInvertedIndex index, String query) {
+    public static void queryParser(NaiveInvertedIndex index, String query, List docId) {
         List<String> phraseList = new ArrayList<>();
         String pharseIdentifier = "\"";
 // Prepare a final outPut List.
@@ -83,10 +84,10 @@ public class QueryLanguage {
         int firstPhraseIndex = input.indexOf(pharseIdentifier);
         String remainderString = null;
         if (lastPhraseIndex > -1) {
-            String strictPhrase = input.substring(firstPhraseIndex, lastPhraseIndex);
+            String strictPhrase = input.substring(firstPhraseIndex+1, lastPhraseIndex);
 //list.add output of function search passing strictPhrase.
             Set<String> phraseSet;
-
+            
             phraseSet = phraseWordQuery(index, strictPhrase);
             phraseList = new ArrayList<>(phraseSet);
             remainderString = input.substring(lastPhraseIndex + 1, input.length());
@@ -108,6 +109,9 @@ public class QueryLanguage {
                 andTokensResultSet = wordQuery(index, andTokensizer.nextToken());
                 } else{
                    andTokensResultSet.retainAll(index.getDocumentId(andTokensizer.nextToken()));
+                }
+               if(!phraseList.isEmpty() && !andTokensResultSet.isEmpty()){
+                andTokensResultSet.retainAll(phraseList);
                 }
                 /*if (andTokensizer.countTokens() >= 1) {
                     andTokensResultSet.retainAll(index.getDocumentId(andTokensizer.nextToken()));
@@ -162,6 +166,26 @@ public class QueryLanguage {
         }
         return tempDocSet;
     }
+    public static List notWordQuery(NaiveInvertedIndex index, String word,List docId) {
+        System.out.println("I am a NOT Query");
+            String[] words = word.split("[ ]");
+            Set<Integer> tempDocSet = new HashSet<>();
+            List<Integer> documentIds = new ArrayList<>();
+            documentIds.addAll(docId);
+            if(words.length>1)
+                    {
+                        tempDocSet = phraseWordQuery(index,word);
+                    } else{
+                tempDocSet = wordQuery(index,word);
+            }
+            documentIds.removeAll(tempDocSet);
+        
+        for(int a : documentIds)
+        {
+            System.out.println("Word is not present in: " + a);
+        }
+        return documentIds;
+    }
     
     public static Set phraseWordQuery(NaiveInvertedIndex index, String query) {
         System.out.println("I am PHRASE Query");
@@ -206,7 +230,7 @@ public class QueryLanguage {
         return tempPosSet1.keySet();
     }
 
-    public static void callStemmer(NaiveInvertedIndex index) {
+    public static void callStemmer(NaiveInvertedIndex index,List docId) {
         Scanner scan = new Scanner(System.in);
         System.out.println("Enter token");
         while (scan.hasNext()) {
@@ -214,7 +238,7 @@ public class QueryLanguage {
             String processToken;
             if (token.equalsIgnoreCase(":q")) {
                 System.out.println("Exit Stemmer");
-                readQueryFromUser(index);
+                readQueryFromUser(index,docId);
             }
             ArrayList<String> normalizeToken;
             normalizeToken = NormalizeToken.normalizeToken(token);
