@@ -78,11 +78,12 @@ public class QueryLanguage {
         String pharseIdentifier = "\"";
 // Prepare a final outPut List.
         String input = query;
-
+        input = input.toLowerCase();
         int lastPhraseIndex = input.lastIndexOf(pharseIdentifier);
+        int firstPhraseIndex = input.indexOf(pharseIdentifier);
         String remainderString = null;
         if (lastPhraseIndex > -1) {
-            String strictPhrase = input.substring(1, lastPhraseIndex);
+            String strictPhrase = input.substring(firstPhraseIndex, lastPhraseIndex);
 //list.add output of function search passing strictPhrase.
             Set<String> phraseSet;
 
@@ -101,24 +102,21 @@ public class QueryLanguage {
             StringTokenizer andTokensizer = new StringTokenizer(andTokens, " ");
             Set<String> andTokensResultSet = new TreeSet<>();
             List<String> andTokensResults = new ArrayList<>();
-            if (!phraseList.isEmpty()) {
-                    andTokensResultSet.addAll(phraseList);
-                }
+            
             while (andTokensizer.hasMoreTokens()) {
-                if(andTokensResultSet.isEmpty()){
+               if(andTokensResultSet.isEmpty()){
                 andTokensResultSet = wordQuery(index, andTokensizer.nextToken());
                 } else{
                    andTokensResultSet.retainAll(index.getDocumentId(andTokensizer.nextToken()));
                 }
-                if (andTokensizer.countTokens() >= 1) {
+                /*if (andTokensizer.countTokens() >= 1) {
                     andTokensResultSet.retainAll(index.getDocumentId(andTokensizer.nextToken()));
                     
-                }
+                }*/
                 //System.out.println("Temp Doc for " + temp + tempDocSet);
                 andTokensResults = new ArrayList<>(andTokensResultSet);
 // do a function search passing andTokensizer.nextToken and store it in andTokensResults.
 // do a intersection of  the results of other token with andTokensResults and store the same in andTokensResults.
-
             }
 // store the results of all the andTokens into the result lsit.
             
@@ -155,8 +153,7 @@ public class QueryLanguage {
         String token[] = index.getDictionary();
         Set<Integer> tempDocSet = new HashSet<>();
         word = word.toLowerCase();
-        int y = Arrays.binarySearch(token, word);
-        
+        int y = Arrays.binarySearch(token, word); 
         if (y < 0) {
             System.out.println("Word does not present, enter query again or :q to quit ");
         } else {
